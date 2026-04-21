@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   ScrollView,
   StyleSheet,
   Text,
@@ -35,11 +34,14 @@ const CATEGORY_PLACEHOLDERS: ApiCategory[] = [
   { id: -4, name: 'Loading...' },
 ];
 
+const APP_VERSION =
+  (require('../../package.json') as { version?: string }).version ?? '0.0.1';
+
 type HomeNav = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<HomeNav>();
-  const { addToCart, removeFromCart, isInCart, totalItems } = useCart();
+  const { addToCart, removeFromCart, isInCart } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
 
   const {
@@ -119,126 +121,130 @@ const HomeScreen: React.FC = () => {
 
   return (
     <Screen>
-      <Header
-        title="Hello"
-        subtitle="Find something you'll love today"
-        rightLabel={`${totalItems}`}
-        rightIconName="cart-outline"
-      />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.pageContent}
+      >
+        <Header title="Hello" subtitle="Find something you'll love today" />
 
-      <View style={styles.banner}>
-        <View style={styles.bannerText}>
-          <Text style={styles.bannerTitle}>Spring Sale</Text>
-          <Text style={styles.bannerSubtitle}>
-            Up to 40% off on selected items
-          </Text>
+        <View style={styles.banner}>
+          <View style={styles.bannerText}>
+            <Text style={styles.bannerTitle}>Spring Sale</Text>
+            <Text style={styles.bannerSubtitle}>
+              Up to 40% off on selected items
+            </Text>
+          </View>
+          <View style={styles.bannerTag}>
+            <Text style={styles.bannerTagText}>40% OFF</Text>
+          </View>
         </View>
-        <View style={styles.bannerTag}>
-          <Text style={styles.bannerTagText}>40% OFF</Text>
-        </View>
-      </View>
 
-      <Text style={styles.sectionLabel}>Categories</Text>
-      {catError && categories.length === 0 ? (
-        <ErrorInline message="Could not load categories." onRetry={onRetry} />
-      ) : visibleCategories.length === 0 ? (
-        <View style={styles.inlineLoader}>
-          <Text style={styles.emptyText}>
-            No categories available right now.
-          </Text>
-        </View>
-      ) : (
-        <View style={styles.categoriesWrap}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesRow}
+        <Text style={styles.sectionLabel}>Categories</Text>
+        {catError && categories.length === 0 ? (
+          <ErrorInline message="Could not load categories." onRetry={onRetry} />
+        ) : visibleCategories.length === 0 ? (
+          <View style={styles.inlineLoader}>
+            <Text style={styles.emptyText}>
+              No categories available right now.
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.categoriesWrap}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesRow}
+            >
+              {visibleCategories.map(c => (
+                <CategoryPill
+                  key={c.id}
+                  label={c.name}
+                  active={c.id === activeCategoryId}
+                  disabled={c.id < 0}
+                  onPress={() => {
+                    if (c.id > 0) {
+                      setActiveCategoryId(c.id);
+                    }
+                  }}
+                />
+              ))}
+            </ScrollView>
+
+            {catLoading && categories.length === 0 ? (
+              <View style={styles.categoryLoadingOverlay} pointerEvents="none">
+                <ActivityIndicator size="small" color={colors.primary} />
+              </View>
+            ) : null}
+          </View>
+        )}
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionLabel}>Featured Products</Text>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              navigation.navigate('Tabs', {
+                screen: 'Products',
+                params: activeCategoryId
+                  ? { categoryId: activeCategoryId }
+                  : undefined,
+              } as never)
+            }
+            style={styles.viewAllBtn}
+            hitSlop={8}
           >
-            {visibleCategories.map(c => (
-              <CategoryPill
-                key={c.id}
-                label={c.name}
-                active={c.id === activeCategoryId}
-                disabled={c.id < 0}
-                onPress={() => {
-                  if (c.id > 0) {
-                    setActiveCategoryId(c.id);
-                  }
-                }}
-              />
-            ))}
-          </ScrollView>
+            <Text style={styles.viewAllText}>View all</Text>
+            <Ionicons
+              name="chevron-forward"
+              size={wp(4)}
+              color={colors.primary}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.productsSection}>
+          {prodLoading && products.length === 0 ? (
+            <View style={styles.centered}>
+              <ActivityIndicator color={colors.primary} />
+            </View>
+          ) : prodError && products.length === 0 ? (
+            <ErrorInline message="Could not load products." />
+          ) : products.length === 0 ? (
+            <View style={styles.centered}>
+              <Text style={styles.emptyText}>
+                No products in this category.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.productsGrid}>
+              {products.map(item => (
+                <View key={item.id} style={styles.cardSlot}>
+                  <ProductCard
+                    product={item}
+                    onPress={() =>
+                      navigation.navigate('ProductDetail', {
+                        productId: Number(item.id),
+                      })
+                    }
+                    onAddToCart={() => addToCart(item)}
+                    onRemoveFromCart={() => removeFromCart(item.id)}
+                    onToggleWishlist={() => toggleWishlist(item)}
+                    isInCart={isInCart(item.id)}
+                    isWishlisted={isWishlisted(item.id)}
+                  />
+                </View>
+              ))}
+            </View>
+          )}
 
-          {catLoading && categories.length === 0 ? (
-            <View style={styles.categoryLoadingOverlay} pointerEvents="none">
+          {showProductRefreshOverlay ? (
+            <View style={styles.productRefreshOverlay} pointerEvents="none">
               <ActivityIndicator size="small" color={colors.primary} />
             </View>
           ) : null}
         </View>
-      )}
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionLabel}>Featured Products</Text>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() =>
-            navigation.navigate('Tabs', {
-              screen: 'Products',
-              params: activeCategoryId ? { categoryId: activeCategoryId } : undefined,
-            } as never)
-          }
-          style={styles.viewAllBtn}
-          hitSlop={8}
-        >
-          <Text style={styles.viewAllText}>View all</Text>
-          <Ionicons name="chevron-forward" size={wp(4)} color={colors.primary} />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.productsSection}>
-        {prodLoading && products.length === 0 ? (
-          <View style={styles.centered}>
-            <ActivityIndicator color={colors.primary} />
-          </View>
-        ) : prodError && products.length === 0 ? (
-          <ErrorInline message="Could not load products." />
-        ) : products.length === 0 ? (
-          <View style={styles.centered}>
-            <Text style={styles.emptyText}>No products in this category.</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={products}
-            keyExtractor={item => item.id}
-            numColumns={2}
-            columnWrapperStyle={styles.column}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View style={styles.cardSlot}>
-                <ProductCard
-                  product={item}
-                  onPress={() =>
-                    navigation.navigate('ProductDetail', {
-                      productId: Number(item.id),
-                    })
-                  }
-                  onAddToCart={() => addToCart(item)}
-                  onRemoveFromCart={() => removeFromCart(item.id)}
-                  onToggleWishlist={() => toggleWishlist(item)}
-                  isInCart={isInCart(item.id)}
-                  isWishlisted={isWishlisted(item.id)}
-                />
-              </View>
-            )}
-          />
-        )}
-
-        {showProductRefreshOverlay ? (
-          <View style={styles.productRefreshOverlay} pointerEvents="none">
-            <ActivityIndicator size="small" color={colors.primary} />
-          </View>
-        ) : null}
-      </View>
+        <Text style={styles.versionText}>Version {APP_VERSION}</Text>
+      </ScrollView>
     </Screen>
   );
 };
@@ -259,6 +265,9 @@ const ErrorInline: React.FC<{ message: string; onRetry?: () => void }> = ({
 );
 
 const styles = StyleSheet.create({
+  pageContent: {
+    paddingBottom: verticalSpacing.md,
+  },
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -322,9 +331,15 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xxs,
   },
   productsSection: { position: 'relative' },
-  listContent: { paddingBottom: verticalSpacing.xl },
-  column: { justifyContent: 'space-between', gap: wp(3) },
-  cardSlot: { flex: 1, marginBottom: wp(3) },
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: wp(3),
+  },
+  cardSlot: {
+    width: '48%',
+  },
   inlineLoader: { paddingVertical: spacing.md },
   centered: {
     paddingVertical: spacing.lg,
@@ -358,6 +373,12 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.primary,
     fontWeight: '700',
+  },
+  versionText: {
+    ...typography.caption,
+    color: colors.secondary,
+    textAlign: 'center',
+    marginTop: verticalSpacing.md,
   },
 });
 

@@ -4,7 +4,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import type { Product } from '../constants/products';
@@ -29,25 +28,18 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [items, setItems] = useState<Product[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const hydratedRef = useRef(false);
 
   useEffect(() => {
-    let active = true;
     readJSON<Product[]>(STORAGE_KEYS.wishlist, []).then(stored => {
-      if (!active) return;
       setItems(stored);
-      hydratedRef.current = true;
       setHydrated(true);
     });
-    return () => {
-      active = false;
-    };
   }, []);
 
   useEffect(() => {
-    if (!hydratedRef.current) return;
+    if (!hydrated) return;
     writeJSON(STORAGE_KEYS.wishlist, items);
-  }, [items]);
+  }, [hydrated, items]);
 
   const toggleWishlist = useCallback((product: Product) => {
     setItems(prev =>

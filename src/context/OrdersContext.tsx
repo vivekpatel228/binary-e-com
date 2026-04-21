@@ -4,7 +4,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import type { CartItem } from './CartContext';
@@ -63,25 +62,18 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const hydratedRef = useRef(false);
 
   useEffect(() => {
-    let active = true;
     readJSON<Order[]>(STORAGE_KEYS.orders, []).then(stored => {
-      if (!active) return;
       setOrders(stored);
-      hydratedRef.current = true;
       setHydrated(true);
     });
-    return () => {
-      active = false;
-    };
   }, []);
 
   useEffect(() => {
-    if (!hydratedRef.current) return;
+    if (!hydrated) return;
     writeJSON(STORAGE_KEYS.orders, orders);
-  }, [orders]);
+  }, [hydrated, orders]);
 
   const placeOrder = useCallback<OrdersContextValue['placeOrder']>(
     async input => {

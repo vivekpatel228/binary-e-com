@@ -219,11 +219,11 @@ const Field: React.FC<FieldProps> = ({
   </View>
 );
 
-const SummaryRow: React.FC<{ label: string; value: string; bold?: boolean }> = ({
-  label,
-  value,
-  bold,
-}) => (
+const SummaryRow: React.FC<{
+  label: string;
+  value: string;
+  bold?: boolean;
+}> = ({ label, value, bold }) => (
   <View style={styles.summaryRow}>
     <Text style={[styles.summaryLabel, bold && styles.bold]}>{label}</Text>
     <Text style={[styles.summaryValue, bold && styles.bold]}>{value}</Text>
@@ -277,7 +277,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   summaryLabel: { ...typography.body, color: colors.secondary },
-  summaryValue: { ...typography.body, color: colors.primary, fontWeight: '600' },
+  summaryValue: {
+    ...typography.body,
+    color: colors.primary,
+    fontWeight: '600',
+  },
   bold: { color: colors.primary, fontWeight: '800' },
   divider: {
     height: 1,

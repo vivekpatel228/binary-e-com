@@ -1,9 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import {
-  Ionicons,
-  type IoniconsIconName,
-} from '@react-native-vector-icons/ionicons/static';
+import { StyleSheet, Text, View } from 'react-native';
+import { type IoniconsIconName } from '@react-native-vector-icons/ionicons/static';
 import { colors, radius, spacing, typography, verticalSpacing } from '../theme';
 
 type Props = {
@@ -14,32 +11,12 @@ type Props = {
   onRightPress?: () => void;
 };
 
-const Header: React.FC<Props> = ({
-  title,
-  subtitle,
-  rightLabel,
-  rightIconName,
-  onRightPress,
-}) => (
+const Header: React.FC<Props> = ({ title, subtitle }) => (
   <View style={styles.container}>
     <View style={styles.textBlock}>
       <Text style={styles.title}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>
-    {rightLabel || rightIconName ? (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={onRightPress}
-        style={styles.rightBtn}
-      >
-        {rightIconName ? (
-          <Ionicons name={rightIconName} size={14} color={colors.primary} />
-        ) : null}
-        {rightLabel ? (
-          <Text style={styles.rightLabel}>{rightLabel}</Text>
-        ) : null}
-      </TouchableOpacity>
-    ) : null}
   </View>
 );
 

@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
-  useRef,
   useState,
 } from 'react';
 import type { Product } from '../constants/products';
@@ -88,25 +87,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const [hydrated, setHydrated] = useState(false);
-  const hydratedRef = useRef(false);
 
   useEffect(() => {
-    let active = true;
     readJSON<CartItem[]>(STORAGE_KEYS.cart, []).then(items => {
-      if (!active) return;
       dispatch({ type: 'HYDRATE', items });
-      hydratedRef.current = true;
       setHydrated(true);
     });
-    return () => {
-      active = false;
-    };
   }, []);
 
   useEffect(() => {
-    if (!hydratedRef.current) return;
+    if (!hydrated) return;
     writeJSON(STORAGE_KEYS.cart, state.items);
-  }, [state.items]);
+  }, [hydrated, state.items]);
 
   const addToCart = useCallback(
     (product: Product, quantity?: number) =>

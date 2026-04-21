@@ -22,7 +22,13 @@ import { Ionicons } from '@react-native-vector-icons/ionicons/static';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { CategoryPill, EmptyState, Header, ProductCard, Screen } from '../components';
+import {
+  CategoryPill,
+  EmptyState,
+  Header,
+  ProductCard,
+  Screen,
+} from '../components';
 import { useCart, useWishlist } from '../context';
 import {
   GET_CATEGORIES,
@@ -37,7 +43,10 @@ import { wp } from '../utils/responsive';
 import { showErrorToast } from '../utils/toast';
 
 type ProductsNav = NativeStackNavigationProp<RootStackParamList, 'Tabs'>;
-type ProductsRoute = RouteProp<{ Products: { categoryId?: number } | undefined }, 'Products'>;
+type ProductsRoute = RouteProp<
+  { Products: { categoryId?: number } | undefined },
+  'Products'
+>;
 
 type SortOption = 'none' | 'priceAsc' | 'priceDesc';
 
@@ -85,7 +94,9 @@ const ProductsScreen: React.FC = () => {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounced(query, 400);
 
-  const [categoryId, setCategoryId] = useState<number | null>(initialCategoryId);
+  const [categoryId, setCategoryId] = useState<number | null>(
+    initialCategoryId,
+  );
   const [priceMinInput, setPriceMinInput] = useState('');
   const [priceMaxInput, setPriceMaxInput] = useState('');
   const [priceMin, setPriceMin] = useState<number | null>(null);
@@ -119,13 +130,9 @@ const ProductsScreen: React.FC = () => {
     [debouncedQuery, categoryId, priceMin, priceMax],
   );
 
-  const {
-    data,
-    loading,
-    error,
-    refetch,
-    fetchMore,
-  } = useQuery<{ products: ApiProduct[] }>(GET_PRODUCTS_FILTERED, {
+  const { data, loading, error, refetch, fetchMore } = useQuery<{
+    products: ApiProduct[];
+  }>(GET_PRODUCTS_FILTERED, {
     variables: { limit: PAGE_SIZE, offset: 0, pathSuffix },
     notifyOnNetworkStatusChange: true,
   });
@@ -267,7 +274,11 @@ const ProductsScreen: React.FC = () => {
           onPress={() => setFiltersOpen(true)}
           style={styles.filterBtn}
         >
-          <Ionicons name="options-outline" size={wp(5)} color={colors.natural} />
+          <Ionicons
+            name="options-outline"
+            size={wp(5)}
+            color={colors.natural}
+          />
           {activeFilterCount > 0 ? (
             <View style={styles.filterBadge}>
               <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
@@ -311,7 +322,9 @@ const ProductsScreen: React.FC = () => {
             ) : null}
             {sort !== 'none' ? (
               <ActiveChip
-                label={sort === 'priceAsc' ? 'Price: Low→High' : 'Price: High→Low'}
+                label={
+                  sort === 'priceAsc' ? 'Price: Low→High' : 'Price: High→Low'
+                }
                 onClear={() => setSort('none')}
               />
             ) : null}
