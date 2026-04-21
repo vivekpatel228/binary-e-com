@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import {
   Ionicons,
   type IoniconsIconName,
-} from '@react-native-vector-icons/ionicons/static';
+} from '@react-native-vector-icons/ionicons';
 import { colors, spacing, typography, verticalSpacing } from '../theme';
 import { wp } from '../utils/responsive';
 

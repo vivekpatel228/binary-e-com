@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@react-native-vector-icons/ionicons/static';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import type { Product } from '../constants/products';
 import { colors, radius, spacing, typography, verticalSpacing } from '../theme';
 import { formatPrice } from '../utils/formatters';

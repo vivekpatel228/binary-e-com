@@ -1,14 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { type IoniconsIconName } from '@react-native-vector-icons/ionicons/static';
 import { colors, radius, spacing, typography, verticalSpacing } from '../theme';
 
 type Props = {
   title: string;
   subtitle?: string;
-  rightLabel?: string;
-  rightIconName?: IoniconsIconName;
-  onRightPress?: () => void;
 };
 
 const Header: React.FC<Props> = ({ title, subtitle }) => (

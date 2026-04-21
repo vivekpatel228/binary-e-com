@@ -10,7 +10,7 @@ import {
 import { useCart } from '../context';
 import { colors, typography } from '../theme';
 import { hp } from '../utils/responsive';
-import type { IoniconsIconName } from '@react-native-vector-icons/ionicons/static';
+import type { IoniconsIconName } from '@react-native-vector-icons/ionicons';
 
 export type RootTabParamList = {
   Home: undefined;

@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Ionicons,
   type IoniconsIconName,
-} from '@react-native-vector-icons/ionicons/static';
+} from '@react-native-vector-icons/ionicons';
 
 type Props = {
   icon: IoniconsIconName;
