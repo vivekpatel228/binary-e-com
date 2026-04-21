@@ -1,97 +1,144 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# binaryECom
 
-# Getting Started
+React Native e-commerce demo app built with TypeScript, Apollo Client (REST via GraphQL), React Navigation, and AsyncStorage persistence.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+- Home experience with category pills, promotional banner, featured products grid, retry states, and app version display.
+- Product browsing with search, category filter, price range filter, sort by price, active filter chips, pull-to-refresh, and pagination/infinite loading.
+- Product detail screen with wishlist toggle, dynamic price display, and quantity management before/after adding to cart.
+- Cart with quantity stepper, item removal, subtotal calculation, and checkout entry.
+- Checkout with inline address validation, keyboard-aware form behavior, saved last-used address, and order summary (subtotal, shipping, tax, total).
+- Wishlist with quick add/remove to cart and product detail navigation.
+- Order flow with mock order placement, success screen, order list, and full order detail view.
+- Profile summary with quick links and live counters for orders, wishlist, and cart.
+- Local persistence for cart, wishlist, orders, and shipping address via AsyncStorage.
+- Toast notifications for error/success feedback.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Tech Stack
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- React Native 0.85.1
+- React 19
+- TypeScript 5
+- Apollo Client + apollo-link-rest (REST API consumed through GraphQL queries)
+- React Navigation (Bottom Tabs + Native Stack)
+- AsyncStorage for offline state persistence
+- react-native-vector-icons (Ionicons)
+
+## API
+
+The app uses EscuelaJS public API:
+
+- Base URL: https://api.escuelajs.co/api/v1/
+
+Configured in src/graphql/client.ts.
+
+## Prerequisites
+
+- Node.js >= 22.11.0
+- npm (or yarn/pnpm if you prefer)
+- React Native environment setup completed for 0.85:
+  https://reactnative.dev/docs/set-up-your-environment
+- Android Studio + SDKs for Android development
+- Xcode for iOS development (macOS only)
+
+## Quick Start
+
+1. Clone and install dependencies:
 
 ```sh
-# Using npm
+npm install
+```
+
+2. Start Metro:
+
+```sh
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+3. Run the app in another terminal:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Android:
 
 ```sh
-# Using npm
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+iOS (macOS only):
 
 ```sh
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
+cd ios
 bundle exec pod install
+cd ..
+npm run ios
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Scripts
+
+- npm start: start Metro bundler
+- npm run android: build and run Android app
+- npm run ios: build and run iOS app
+- npm test: run Jest tests
+- npm run lint: run ESLint
+
+## Project Structure
+
+```text
+src/
+	components/    Reusable UI components
+	constants/     Shared domain models
+	context/       Cart, Wishlist, Orders state providers
+	graphql/       Apollo client + REST-backed GraphQL queries/types
+	navigation/    Tab and stack navigation
+	screens/       Feature screens
+	theme/         Colors, typography, spacing
+	utils/         Mappers, formatters, responsive helpers, storage, toast
+```
+
+## State and Persistence
+
+- Cart, wishlist, orders, and last shipping address are persisted in AsyncStorage.
+- Hydration runs on app launch so state survives restarts.
+
+## Troubleshooting
+
+### 1) Icons not rendering correctly
+
+If icons look wrong or show fallback glyphs:
 
 ```sh
-# Using npm
-npm run ios
+# Rebuild Android assets/fonts
+cd android
+.\gradlew :app:mergeDebugAssets
+cd ..
 
-# OR using Yarn
-yarn ios
+# Restart Metro with cache reset
+npx react-native start --reset-cache
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Then reinstall the app on the emulator/device.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+### 2) iOS pods issues
 
-## Step 3: Modify your app
+```sh
+cd ios
+bundle exec pod install
+cd ..
+```
 
-Now that you have successfully run the app, let's make changes!
+If needed, clean Xcode build folder and run again.
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### 3) Android build issues
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+- Verify Android SDK/NDK and JDK are configured from the official RN setup guide.
+- Ensure Gradle has enough memory (configured in android/gradle.properties).
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## Notes
 
-## Congratulations! :tada:
+- New Architecture is enabled (see android/gradle.properties: newArchEnabled=true).
+- Hermes is enabled for JavaScript execution.
 
-You've successfully run and modified your React Native App. :partying_face:
+## License
 
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+This project is for practical/demo purposes.
